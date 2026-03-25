@@ -1,5 +1,44 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment Variables
+
+Create a `.env` file in `web/` with:
+
+```bash
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+JWT_SECRET=your-secret-key-change-this
+STELLAR_HORIZON_URL=https://horizon.stellar.org
+```
+
+## Supabase Setup
+
+Run the SQL in [data/supabase/schema.sql](data/supabase/schema.sql) in your Supabase project's SQL Editor.
+
+This creates all required tables and indexes used by the API routes:
+
+- `users`
+- `projects`
+- `ratings`
+- `auth_challenges`
+- `counters`
+- `financial_snapshots`
+
+## Optional RLS Policies
+
+Run [data/supabase/rls.sql](data/supabase/rls.sql) after the base schema if you want Row Level Security enabled.
+
+This policy set provides:
+
+- Public read access for approved/featured projects
+- Claim-based authenticated writes for users/projects/ratings
+- Backend-only access (service-role) for `auth_challenges`, `counters`, and `financial_snapshots`
+
+The write policies expect JWT custom claims:
+
+- `app_user_id` (mapped to `users.numericId`)
+- `app_role` (for admin overrides)
+
 ## Getting Started
 
 First, run the development server:

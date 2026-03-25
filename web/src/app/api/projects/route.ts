@@ -13,7 +13,7 @@ export async function GET(request: Request) {
     const limit = Math.min(50, Math.max(1, Number(url.searchParams.get("limit")) || 12));
 
     // Query approved/featured projects
-    let query: FirebaseFirestore.Query = projectsCol.ref.where(
+    let query = projectsCol.ref.where(
       "status",
       "in",
       ["approved", "featured"]

@@ -93,28 +93,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const connectWallet = async () => {
-    // Check for Freighter wallet extension
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const freighter = (window as any).freighter as
-      | { isConnected: () => Promise<boolean>; getPublicKey: () => Promise<string>; signMessage: (msg: string) => Promise<{ signature: string }> }
-      | undefined;
+    const { isConnected, requestAccess, getAddress, signMessage } = await import("@stellar/freighter-api");
 
-    if (!freighter) {
+    // Check if Freighter is installed
+    const connResult = await isConnected();
+    if (connResult.error || !connResult.isConnected) {
       throw new Error(
         "Freighter wallet not found. Please install the Freighter browser extension."
       );
     }
 
-    const connected = await freighter.isConnected();
-    if (!connected) {
-      throw new Error("Please connect your Freighter wallet first.");
+    // Request access and get public key
+    const accessResult = await requestAccess();
+    if (accessResult.error) {
+      throw new Error(accessResult.error.message || "Wallet access denied.");
     }
 
-    // Get public key
-    const publicKey = await freighter.getPublicKey();
-    if (!publicKey) {
+    const addrResult = await getAddress();
+    if (addrResult.error || !addrResult.address) {
       throw new Error("Could not retrieve public key from wallet.");
     }
+    const publicKey = addrResult.address;
 
     // Request challenge from server
     const challengeRes = await fetch(`/api/auth/challenge?publicKey=${publicKey}`);
@@ -122,13 +121,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!challengeRes.ok) throw new Error(challengeData.error || "Failed to get challenge");
 
     // Sign the challenge with wallet
-    const { signature } = await freighter.signMessage(challengeData.challenge);
+    const signResult = await signMessage(challengeData.challenge);
+    if (signResult.error || !signResult.signedMessage) {
+      throw new Error("Failed to sign challenge with wallet.");
+    }
 
     // Verify signature with server
     const authRes = await fetch("/api/auth/wallet", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ publicKey, signature }),
+      body: JSON.stringify({ publicKey, signature: signResult.signedMessage }),
     });
     const authData = await authRes.json();
     if (!authRes.ok) throw new Error(authData.error || "Wallet authentication failed");
