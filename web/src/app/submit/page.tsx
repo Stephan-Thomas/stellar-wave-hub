@@ -66,9 +66,9 @@ const submitSchema = z.object({
     .or(z.literal("")),
   github_url: z
     .string()
+    .min(1, "GitHub URL is required")
     .url("Please enter a valid URL")
-    .refine((val) => val === "" || val.includes("github.com"), "Must be a GitHub URL")
-    .or(z.literal("")),
+    .refine((val) => val.includes("github.com"), "Must be a GitHub URL"),
   logo_url: z
     .string()
     .url("Please enter a valid URL")
@@ -356,7 +356,7 @@ export default function SubmitPage() {
               name="github_url"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>GitHub URL</FormLabel>
+                  <FormLabel>GitHub URL *</FormLabel>
                   <FormControl>
                     <Input type="url" placeholder="https://github.com/..." {...field} />
                   </FormControl>
