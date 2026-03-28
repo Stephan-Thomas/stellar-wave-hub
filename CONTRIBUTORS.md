@@ -88,7 +88,7 @@ Replace `YOUR_GITHUB_USERNAME`, `Your Name`, `YOUR_X_HANDLE`, and the role/proje
   <br />
   <a href="https://github.com/Stephan-Thomas"><img src="https://img.shields.io/badge/-GitHub-181717?logo=github&logoColor=white&style=flat-square" alt="GitHub" /></a>
   <br />
-  <sub>Researcher — Researched and submitted Soroswap.Finance AMM profile</sub>
+  <sub>Researcher — Researched and submitted Soroswap.Finance AMM profile; Researched and submitted Blend Protocol profile — yield mechanism, APY ranges, on-chain contract verification, and risk disclosure</sub>
 </div>
 
 </div>
